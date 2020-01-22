@@ -3,7 +3,7 @@ import Authentication
 /// Called before your application initializes.
 public func configure(_ config: inout Config, _ env: inout Environment, _ services: inout Services) throws {
     // Load .env file
-//    Environment.dotenv()
+    Environment.dotenv()
     
     /// Register providers first
     try services.register(FluentPostgreSQLProvider())
@@ -15,11 +15,12 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
     services.register(serverConfig)
     
     /// Register routes to the router
-    services.register { (container) -> (EngineRouter) in
+    services.register(Router.self) { (container) -> (EngineRouter) in
         let router = EngineRouter.default()
         try routes(router, container)
         return router
     }
+    
     
     /// Register middlewares
     var middlewaresConfig = MiddlewareConfig()

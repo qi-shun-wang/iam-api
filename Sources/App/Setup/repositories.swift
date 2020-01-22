@@ -1,31 +1,31 @@
 import Vapor
 
 public func setupRepositories(services: inout Services, config: inout Config) throws {
-    services.register { (container) -> (PSQLPolicyRepository) in
+    services.register(PolicyRepository.self) { (container) -> (PSQLPolicyRepository) in
         return try PSQLPolicyRepository(container.connectionPool(to: .psql))
     }
-    services.register { (container) -> (PSQLGroupRepository) in
+    services.register(GroupRepository.self) { (container) -> (PSQLGroupRepository) in
         return try PSQLGroupRepository(container.connectionPool(to: .psql))
     }
-    services.register { (container) -> (PSQLGroupPolicyRepository) in
+    services.register(GroupPolicyRepository.self) { (container) -> (PSQLGroupPolicyRepository) in
         return try PSQLGroupPolicyRepository(container.connectionPool(to: .psql))
     }
-    services.register { (container) -> (PSQLGroupUserRepository) in
+    services.register(GroupUserRepository.self) { (container) -> (PSQLGroupUserRepository) in
         return try PSQLGroupUserRepository(container.connectionPool(to: .psql))
     }
-    services.register { (container) -> (PSQLOpenIDRepository) in
+    services.register(OpenIDRepository.self) { (container) -> (PSQLOpenIDRepository) in
         return try PSQLOpenIDRepository(container.connectionPool(to: .psql))
     }
-    services.register { (container) -> (PSQLRoleRepository) in
+    services.register(RoleRepository.self) { (container) -> (PSQLRoleRepository) in
         return try PSQLRoleRepository(container.connectionPool(to: .psql))
     }
-    services.register { (container) -> (PSQLRolePolicyRepository) in
+    services.register(RolePolicyRepository.self) { (container) -> (PSQLRolePolicyRepository) in
         return try PSQLRolePolicyRepository(container.connectionPool(to: .psql))
     }
-    services.register { (container) -> (PSQLRoleUserRepository) in
+    services.register(RoleUserRepository.self) { (container) -> (PSQLRoleUserRepository) in
         return try PSQLRoleUserRepository(container.connectionPool(to: .psql))
     }
-    services.register { (container) -> (PSQLUserRepository) in
+    services.register(UserRepository.self) { (container) -> (PSQLUserRepository) in
         return try PSQLUserRepository(container.connectionPool(to: .psql))
     }
     preferDatabaseRepositories(config: &config)
