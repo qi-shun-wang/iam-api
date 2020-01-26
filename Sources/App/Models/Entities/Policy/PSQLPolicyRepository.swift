@@ -9,33 +9,27 @@ final class PSQLPolicyRepository: PolicyRepository {
         self.db = db
     }
 
-    func find(id: Int) -> EventLoopFuture<Policy?> {
+    func save(policy: Policy) -> EventLoopFuture<Policy> {
         return db.withConnection { conn in
-            return Policy.find(id, on: conn)
+            return policy.save(on: conn)
         }
     }
-
+    
+    func find(id: Int) -> EventLoopFuture<Policy?> {
+        return db.withConnection { conn in
+            return Policy.findOne(by: [\.id == id], on: conn, withSoftDeleted: false)
+        }
+    }
+    
     func all() -> EventLoopFuture<[Policy]> {
         return db.withConnection { conn in
             return Policy.query(on: conn).all()
         }
     }
-
-    func find(email: String) -> EventLoopFuture<Policy?> {
+    
+    func delete(policy: Policy) -> EventLoopFuture<Void> {
         return db.withConnection { conn in
-            return Policy.query(on: conn).first()
-        }
-    }
-
-    func findCount(email: String) -> EventLoopFuture<Int> {
-        return db.withConnection { conn in
-            return Policy.query(on: conn).count()
-        }
-    }
-
-    func save(user: Policy) -> EventLoopFuture<Policy> {
-        return db.withConnection { conn in
-            return user.save(on: conn)
+            return policy.delete(on: conn)
         }
     }
 }
