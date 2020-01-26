@@ -38,16 +38,17 @@ final class IdentityController: RouteCollection {
         let user = try req.requireAuthenticated(User.self)
         return self.roleUserRepository.findRoles(user).flatMap { roles in
             return self.groupUserRepository.findGroups(user).flatMap { groups  in
-                    return self.rolePolicyRepository.findPolicies(in: roles).flatMap { (rPolicies) in
-                        return self.groupPolicyRepository.findPolicies(in: groups).map { (gPolicies) in
-                            var p:[String] = []
-                            p.append(contentsOf: rPolicies.map{$0.key})
-                            p.append(contentsOf: gPolicies.map{$0.key})
-                            return CheckIdentityResponse(groups: groups.map{$0.name},
+                return self.rolePolicyRepository.findPolicies(in: roles).flatMap { (rPolicies) in
+                    return self.groupPolicyRepository.findPolicies(in: groups).map { (gPolicies) in
+                        var p:[String] = []
+                        p.append(contentsOf: rPolicies.map{$0.key})
+                        p.append(contentsOf: gPolicies.map{$0.key})
+                        return try CheckIdentityResponse(id: user.requireID(),
+                                                         groups: groups.map{$0.name},
                                                          roles: roles.map {$0.type},
                                                          policies: p)
-                        }
                     }
+                }
             }
         }
     }
@@ -56,7 +57,6 @@ final class IdentityController: RouteCollection {
         let user = try req.requireAuthenticated(User.self)
         user.accessKey = UUID().uuidString
         return self.userRepository.save(user: user).map { user in
-            print( "Hello, \(user.accessKey).")
             return User.TokenForm(token: user.accessKey)
         }
     }
