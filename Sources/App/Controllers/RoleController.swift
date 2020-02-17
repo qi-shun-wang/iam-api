@@ -1,4 +1,5 @@
 import Vapor
+import IAM
 
 final class RoleController: RouteCollection {
     private let roleRepository: RoleRepository
@@ -8,7 +9,8 @@ final class RoleController: RouteCollection {
     }
     
     func boot(router: Router) throws {
-        let roles = router.grouped("roles")
+        let allowedPolicy = User.IAMAuthPolicyMiddleware(allowed: [IAMPolicyIdentifier.root])
+        let roles = router.grouped("roles").grouped(allowedPolicy)
         roles.post(use: create)
         roles.get(use: index)
         roles.get(Role.ID.parameter, use: select)

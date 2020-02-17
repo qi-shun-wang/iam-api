@@ -24,7 +24,7 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
     
     /// Register middlewares
     var middlewaresConfig = MiddlewareConfig()
-    try middlewares(config: &middlewaresConfig)
+    try middlewares(config: &middlewaresConfig, services:&services)
     services.register(middlewaresConfig)
     
     /// Register databases.

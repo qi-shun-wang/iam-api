@@ -1,7 +1,7 @@
 import Vapor
-
+import IAM
 /// Register your application's middlewares here.
-public func middlewares(config: inout MiddlewareConfig) throws {
+public func middlewares(config: inout MiddlewareConfig, services: inout Services) throws {
     // CORS
     let corsConfig = CORSMiddleware.Configuration(
         allowedOrigin: .originBased,
@@ -24,10 +24,15 @@ public func middlewares(config: inout MiddlewareConfig) throws {
     )
     
     let corsMiddleware = CORSMiddleware(configuration: corsConfig)
+    let iamConfig = IAMConfig(hostname: "http://localhost",
+                              port: 8081,
+                              exceptionPaths: ["/v1/identity/check",
+                                               "/v1/identity/token"])
+    services.register(iamConfig)
     config.use(corsMiddleware)
     config.use(ErrorMiddleware.self) // Catches errors and converts to HTTP response
     config.use(SessionsMiddleware.self)
-//    config.use(FileMiddleware.self) // Serves files from `Public/` directory
+    //    config.use(FileMiddleware.self) // Serves files from `Public/` directory
     
     // Other Middlewares...
 }

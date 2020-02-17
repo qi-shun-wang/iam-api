@@ -27,3 +27,8 @@ enum AppEnvironment: String {
         }
     }
 }
+
+public struct IAMPolicyIdentifier {
+    private init(){}
+    static let root = "ROOT"
+}

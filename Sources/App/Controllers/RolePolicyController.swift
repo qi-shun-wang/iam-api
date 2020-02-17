@@ -14,8 +14,9 @@ final class RolePolicyController: RouteCollection {
     }
     
     func boot(router: Router) throws {
-        let roles = router.grouped("roles")
-        let policies = router.grouped("policies")
+        let allowedPolicy = User.IAMAuthPolicyMiddleware(allowed: [IAMPolicyIdentifier.root])
+        let roles = router.grouped("roles").grouped(allowedPolicy)
+        let policies = router.grouped("policies").grouped(allowedPolicy)
         policies.get(Policy.ID.parameter, "roles", use: indexRoles)
         roles.get(Role.ID.parameter, "policies", use: indexPolicies)
         roles.delete(Role.ID.parameter, "policies", Policy.ID.parameter, use: delete)

@@ -2,9 +2,10 @@
 import PackageDescription
 
 let package = Package(
-    name: "fd-iam",
+    name: "fd-iam-api",
     products: [
-        .library(name: "fd-iam", targets: ["App"]),
+        .library(name: "IAM", targets: ["IAM"]),
+        .library(name: "fd-iam-api", targets: ["App"]),
     ],
     dependencies: [
         // 💧 A server-side Swift web framework.
@@ -21,6 +22,7 @@ let package = Package(
         .package(url: "https://github.com/vapor-community/vapor-ext.git", from: "0.3.4"),
     ],
     targets: [
+        .target(name: "IAM", dependencies: ["Vapor"]),
         .target(name: "App", dependencies: [
             "Vapor"
             , "VaporExt"
@@ -28,6 +30,7 @@ let package = Package(
             , "Validation"
             , "Authentication"
             , "Crypto"
+            , "IAM"
         ]),
         .target(name: "Run", dependencies: ["App"]),
         .testTarget(name: "AppTests", dependencies: ["App"])

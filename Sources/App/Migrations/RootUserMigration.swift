@@ -1,0 +1,5 @@
+import FluentPostgreSQL
+
+struct RootUserMigration  {
+     
+}
