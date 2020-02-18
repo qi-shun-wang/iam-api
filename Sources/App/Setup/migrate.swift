@@ -13,5 +13,11 @@ public func migrate(config: inout MigrationConfig) {
     config.add(model: GroupUser.self, database: .psql)
     config.add(model: RoleUser.self, database: .psql)
     config.add(model: RolePolicy.self, database: .psql)
+    config.add(migration: RootUserMigration.self, database: .psql)
+    config.add(migration: RootPolicyMigration.self, database: .psql)
+    config.add(migration: DefaultRolesMigration.self, database: .psql)
+    config.add(migration: RootRolePolicyMigration.self, database: .psql)
+    config.add(migration: RootUserRoleMigration.self, database: .psql)
+    
     config.prepareCache(for: .psql)
 }
