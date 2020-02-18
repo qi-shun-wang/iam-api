@@ -83,6 +83,15 @@
         }
       },
       {
+        "package": "fd-iam-service",
+        "repositoryURL": "https://github.com/qi-shun-wang/IAM-Service.git",
+        "state": {
+          "branch": null,
+          "revision": "0df800e88bac3014f2a8bbfab6a2d9538e72a1e5",
+          "version": "1.0.0"
+        }
+      },
+      {
         "package": "Multipart",
         "repositoryURL": "https://github.com/vapor/multipart.git",
         "state": {

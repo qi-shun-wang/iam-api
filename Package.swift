@@ -4,7 +4,6 @@ import PackageDescription
 let package = Package(
     name: "fd-iam-api",
     products: [
-        .library(name: "IAM", targets: ["IAM"]),
         .library(name: "fd-iam-api", targets: ["App"]),
     ],
     dependencies: [
@@ -20,9 +19,10 @@ let package = Package(
         .package(url: "https://github.com/vapor/crypto.git", from: "3.3.3"),
         // ⚙️ A collection of Swift extensions for wide range of Vapor data types and classes.
         .package(url: "https://github.com/vapor-community/vapor-ext.git", from: "0.3.4"),
+        //IAM Client for Identity and access management service base on Vapor Web Framework.
+        .package(url: "https://github.com/qi-shun-wang/IAM-Service.git", from: "1.0.0"),
     ],
     targets: [
-        .target(name: "IAM", dependencies: ["Vapor"]),
         .target(name: "App", dependencies: [
             "Vapor"
             , "VaporExt"
