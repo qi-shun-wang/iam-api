@@ -3,7 +3,7 @@ import FluentPostgreSQL
 extension Group: PostgreSQLModel {
     static var entity = "groups"
 }
-extension Group: Migration { }
+extension Group: PostgreSQLMigration { }
 extension Group {
     var policies: Siblings<Group, Policy, GroupPolicy> {
         return siblings()

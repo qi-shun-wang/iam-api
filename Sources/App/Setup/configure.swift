@@ -43,9 +43,9 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
     
     
     /// Register Content Config
-    //    var contentConfig = ContentConfig.default()
-    //    try content(config: &contentConfig)
-    //    services.register(contentConfig)
+//        var contentConfig = ContentConfig.default()
+//        try content(config: &contentConfig)
+//        services.register(contentConfig)
     
     /// Register Commands
     //    var commandsConfig = CommandConfig.default()

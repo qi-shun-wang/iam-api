@@ -13,6 +13,6 @@ extension RolePolicy: PostgreSQLPivot {
     static var updatedAtKey: TimestampKey? = \.updatedAt
 }
 
-extension RolePolicy: Migration {}
+extension RolePolicy: PostgreSQLMigration {}
 
 extension RolePolicy: ModifiablePivot {}

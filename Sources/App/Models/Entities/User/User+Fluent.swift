@@ -3,7 +3,7 @@ import FluentPostgreSQL
 extension User: PostgreSQLModel {
     static var entity = "users"
 }
-extension User: Migration { }
+extension User: PostgreSQLMigration { }
 extension User {
     var openIDs: Children<User, OpenID> {
         return children(\.userID)

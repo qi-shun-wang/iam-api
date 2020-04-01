@@ -21,6 +21,9 @@ enum AppEnvironment: String {
     case SMTP_USERNAME
     case SMTP_PASSWORD
     
+    case IAM_HOSTNAME
+    case IAM_PORT
+    
     var value: String {
         get {
             return self.rawValue

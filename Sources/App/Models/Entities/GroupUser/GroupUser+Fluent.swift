@@ -13,6 +13,6 @@ extension GroupUser: PostgreSQLPivot {
     static var updatedAtKey: TimestampKey? = \.updatedAt
 }
 
-extension GroupUser: Migration {}
+extension GroupUser: PostgreSQLMigration {}
 
 extension GroupUser: ModifiablePivot {}

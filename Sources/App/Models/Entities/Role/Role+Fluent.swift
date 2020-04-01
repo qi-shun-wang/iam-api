@@ -3,7 +3,7 @@ import FluentPostgreSQL
 extension Role: PostgreSQLModel {
     static var entity = "roles"
 }
-extension Role: Migration { }
+extension Role: PostgreSQLMigration { }
 extension Role {
     var policies: Siblings<Role, Policy, RolePolicy> {
         return siblings()

@@ -24,8 +24,12 @@ public func middlewares(config: inout MiddlewareConfig, services: inout Services
     )
     
     let corsMiddleware = CORSMiddleware(configuration: corsConfig)
-    let iamConfig = IAMConfig(hostname: "http://localhost",
-                              port: 8081,
+    
+    
+    let iamHostname = Environment.get(AppEnvironment.IAM_HOSTNAME.value, "http://localhost")
+    let iamPort = Environment.get(AppEnvironment.IAM_PORT.value, 80)
+    let iamConfig = IAMConfig(hostname: iamHostname,
+                              port: iamPort,
                               exceptionPaths: ["/v1/identity/check",
                                                "/v1/identity/token"])
     services.register(iamConfig)
