@@ -34,7 +34,7 @@ public func middlewares(config: inout MiddlewareConfig, services: inout Services
                               exceptionPaths: ["/v1/identity/check",
                                                "/v1/identity/token"])
     services.register(iamConfig)
-//    config.use(corsMiddleware)
+    config.use(corsMiddleware)
     config.use(ErrorMiddleware.self) // Catches errors and converts to HTTP response
     config.use(SessionsMiddleware.self)
     //    config.use(FileMiddleware.self) // Serves files from `Public/` directory
