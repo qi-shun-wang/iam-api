@@ -17,7 +17,7 @@ final class RoleUserController: RouteCollection {
         let allowedPolicy = User.IAMAuthPolicyMiddleware(allowed: [IAMPolicyIdentifier.root])
         let roles = router.grouped("roles").grouped(allowedPolicy)
         let users = router.grouped("users").grouped(allowedPolicy)
-        users.get(User.ID.parameter, "users", use: indexRoles)
+        users.get(User.ID.parameter, "roles", use: indexRoles)
         roles.get(Role.ID.parameter, "users", use: indexUsers)
         roles.delete(Role.ID.parameter, "users", User.ID.parameter, use: delete)
         roles.post(Role.ID.parameter, "users", User.ID.parameter, use: create)
