@@ -24,6 +24,8 @@ enum AppEnvironment: String {
     case IAM_HOSTNAME
     case IAM_PORT
     
+    case CORS_ORIGINS
+    
     var value: String {
         get {
             return self.rawValue
