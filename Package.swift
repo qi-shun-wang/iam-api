@@ -20,7 +20,7 @@ let package = Package(
         // ⚙️ A collection of Swift extensions for wide range of Vapor data types and classes.
         .package(url: "https://github.com/vapor-community/vapor-ext.git", from: "0.3.4"),
         //IAM Client for Identity and access management service base on Vapor Web Framework.
-        .package(url: "https://github.com/qi-shun-wang/IAM-Service.git", from: "1.0.0"),
+        .package(url: "https://github.com/qi-shun-wang/IAM-Service.git", from: "1.0.1"),
     ],
     targets: [
         .target(name: "App", dependencies: [
