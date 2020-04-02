@@ -29,10 +29,13 @@ public func middlewares(config: inout MiddlewareConfig, services: inout Services
     
     let iamHostname = Environment.get(AppEnvironment.IAM_HOSTNAME.value, "http://localhost")
     let iamPort = Environment.get(AppEnvironment.IAM_PORT.value, 80)
+    let iamEnable = Environment.get(AppEnvironment.IAM_ENABLE.value, true)
+    
     let iamConfig = IAMConfig(hostname: iamHostname,
                               port: iamPort,
                               exceptionPaths: ["/v1/identity/check",
-                                               "/v1/identity/token"])
+                                               "/v1/identity/token"],
+                              isEnable: iamEnable)
     services.register(iamConfig)
     config.use(corsMiddleware)
     config.use(ErrorMiddleware.self) // Catches errors and converts to HTTP response

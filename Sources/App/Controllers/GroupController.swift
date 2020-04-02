@@ -1,5 +1,5 @@
 import Vapor
-import IAM
+
 final class GroupController: RouteCollection {
     private let groupRepository: GroupRepository
     
@@ -8,7 +8,7 @@ final class GroupController: RouteCollection {
     }
     
     func boot(router: Router) throws {
-        let allowedPolicy = User.IAMAuthPolicyMiddleware(allowed: [IAMPolicyIdentifier.root])
+        let allowedPolicy = Application.IAMAuthPolicyMiddleware(allowed: [IAMPolicyIdentifier.root])
         let groups = router.grouped("groups").grouped(allowedPolicy)
         groups.post(use: create)
         groups.get(use: index)

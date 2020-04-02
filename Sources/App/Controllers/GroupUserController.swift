@@ -14,7 +14,7 @@ final class GroupUserController: RouteCollection {
     }
     
     func boot(router: Router) throws {
-        let allowedPolicy = User.IAMAuthPolicyMiddleware(allowed: [IAMPolicyIdentifier.root])
+        let allowedPolicy = Application.IAMAuthPolicyMiddleware(allowed: [IAMPolicyIdentifier.root])
         let groups = router.grouped("groups").grouped(allowedPolicy)
         let users = router.grouped("users").grouped(allowedPolicy)
         users.get(User.ID.parameter, "groups", use: indexGroups)

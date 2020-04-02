@@ -10,19 +10,11 @@ enum AppEnvironment: String {
     case COOKIE_SECURE
     case COOKIE_DOMAIN
     
-    case USER_TOKEN_SECRET
-    
     case WEB_API_PORT
-    case WEB_API_PATH
-    
-    case VERIFY_WEB_URL
-    
-    case SMTP_HOSTNAME
-    case SMTP_USERNAME
-    case SMTP_PASSWORD
-    
+   
     case IAM_HOSTNAME
     case IAM_PORT
+    case IAM_ENABLE
     
     case CORS_ORIGINS
     

@@ -1,7 +1,7 @@
 import Vapor
 import Crypto
 import Authentication
-import IAM
+
 final class IdentityController: RouteCollection {
     
     private let roleRepository: RoleRepository
@@ -27,7 +27,7 @@ final class IdentityController: RouteCollection {
     }
     
     func boot(router: Router) throws {
-        let allowedPolicy = User.IAMAuthPolicyMiddleware(allowed: [IAMPolicyIdentifier.root])
+        let allowedPolicy = Application.IAMAuthPolicyMiddleware(allowed: [IAMPolicyIdentifier.root])
         let token = User.tokenAuthMiddleware()
         let password = User.basicAuthMiddleware(using: PlaintextVerifier())
         let identity = router.grouped("identity")

@@ -8,7 +8,7 @@ final class PolicyController: RouteCollection {
     }
     
     func boot(router: Router) throws {
-        let allowedPolicy = User.IAMAuthPolicyMiddleware(allowed: [IAMPolicyIdentifier.root])
+        let allowedPolicy = Application.IAMAuthPolicyMiddleware(allowed: [IAMPolicyIdentifier.root])
         let policies = router.grouped("policies").grouped(allowedPolicy)
         policies.post(use: create)
         policies.get(use: index)

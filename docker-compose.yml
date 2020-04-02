@@ -24,7 +24,6 @@ services:
     environment:
       COOKIE_DOMAIN: ${COOKIE_DOMAIN}
       COOKIE_SECURE: ${COOKIE_SECURE}
-      WEB_API_PATH: ${WEB_API_PATH}
       WEB_API_PORT: ${WEB_API_PORT}
       PSQL_LOGS: ${PSQL_LOGS}
       PSQL_HOSTNAME: sys_postgres

@@ -1,6 +1,5 @@
 import Vapor
 import Crypto
-import IAM
 
 final class UserController: RouteCollection {
     private let userRepository: UserRepository
@@ -10,7 +9,7 @@ final class UserController: RouteCollection {
     }
     
     func boot(router: Router) throws {
-        let allowedPolicy = User.IAMAuthPolicyMiddleware(allowed: [IAMPolicyIdentifier.root])
+        let allowedPolicy = Application.IAMAuthPolicyMiddleware(allowed: [IAMPolicyIdentifier.root])
         let users = router.grouped("users").grouped(allowedPolicy)
         users.post(use: create)
         users.get(use: index)
