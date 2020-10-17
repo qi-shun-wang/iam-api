@@ -1,5 +1,10 @@
 import Vapor
 
+extension Request {
+    var userRepository: UserRepository {
+        MongoDBUserRepository(db)
+    }
+}
 public func setupRepositories(_ app: Application) throws {
 //    services.register(PolicyRepository.self) { (container) -> (PSQLPolicyRepository) in
 //        return try PSQLPolicyRepository(container.connectionPool(to: .psql))

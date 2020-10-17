@@ -69,7 +69,7 @@ final class GroupController: RouteCollection {
                 return self.groupRepository.delete(group: group)
                     .transform(to: Response(status: .ok))
             }
-    
+        
         return deleteGroupFuture
     }
     

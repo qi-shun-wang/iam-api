@@ -1,10 +1,13 @@
+import Foundation
 import Fluent
 
 final class User: Model {
+    typealias IDValue = UUID
+    
     static var schema: String = "users"
     
     @ID(key:.id)
-    var id: Int?
+    var id: UUID?
     
     @Field(key: "account_id")
     var accountID: String
@@ -20,7 +23,7 @@ final class User: Model {
     
     init() {}
     
-    init(id: Int? = nil,
+    init(id: UUID? = nil,
          accountID: String,
          password: String,
          accessID: String,

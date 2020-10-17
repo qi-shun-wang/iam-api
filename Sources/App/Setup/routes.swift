@@ -3,6 +3,8 @@ import Vapor
 public func routes(_ app: Application) throws {
     
     let v1 = app.routes.grouped("v1")
+    try v1.register(collection: HealthController())
+    try v1.register(collection: UserController())
     
 //    let rolePolicyController = try RolePolicyController(roleRepository: app,
 //                                                        policyRepository: container.make(),
@@ -38,6 +40,8 @@ public func routes(_ app: Application) throws {
 //    try v1.register(collection: groupUserController)
 //    try v1.register(collection: rolePolicyController)
 //    try v1.register(collection: roleUserController)
+//    v1.register
+    
 //    try v1.register(collection: HealthController())
 }
 // extension Request {

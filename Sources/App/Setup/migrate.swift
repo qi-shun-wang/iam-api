@@ -2,7 +2,8 @@ import Vapor
 
 /// Register your model's migrations here.
 public func migrate(_ app: Application) {
-//    app.migrations.add(<#T##migration: Migration##Migration#>, to: .mongo)
+     
+    app.migrations.add(UserMigration(), to: .mongo)
 //    config.add(model: Group.self, database: .mono)
 //    config.add(model: User.self, database: .psql)
 //    config.add(model: Role.self, database: .psql)

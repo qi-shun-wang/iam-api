@@ -2,11 +2,6 @@ import Vapor
 import Crypto
 
 final class UserController: RouteCollection {
-    private let userRepository: UserRepository
-    
-    init(userRepository: UserRepository) {
-        self.userRepository = userRepository
-    }
     
     func boot(routes: RoutesBuilder) throws {
         //        let allowedPolicy = Application.IAMAuthPolicyMiddleware(allowed: [IAMPolicyIdentifier.root])
@@ -25,15 +20,15 @@ final class UserController: RouteCollection {
                         password: form.password,
                         accessID: UUID().uuidString,
                         accessKey: UUID().uuidString)
-        return self.userRepository.save(user: user)
+        return req.userRepository.save(user: user)
     }
     
     func select( _ req: Request) throws -> EventLoopFuture<User> {
         guard let idString = req.parameters.get("id"),
-              let id = Int(idString)
+              let id = User.IDValue(idString)
         else {throw Abort(.notFound)}
         
-        let findUserFuture = self.userRepository.find(id: id)
+        let findUserFuture = req.userRepository.find(id: id)
             .flatMapThrowing { (result) -> User in
                 if let user = result {
                     return user
@@ -45,7 +40,7 @@ final class UserController: RouteCollection {
     }
     
     func index( _ req: Request) throws -> EventLoopFuture<[User]> {
-        return self.userRepository.all()
+        return req.userRepository.all()
     }
     
     func update( _ req: Request) throws -> EventLoopFuture<User> {
@@ -59,7 +54,7 @@ final class UserController: RouteCollection {
                 if let new = form.password {
                     user.password = new
                 }
-                return self.userRepository.save(user: user)
+                return req.userRepository.save(user: user)
             }
         return updateUserFuture
     }
@@ -68,7 +63,7 @@ final class UserController: RouteCollection {
         let findUserFuture = try select(req)
         let deleteUserFuture = findUserFuture
             .flatMap { (user) -> EventLoopFuture<Response> in
-                return self.userRepository.delete(user: user)
+                return req.userRepository.delete(user: user)
                     .transform(to: Response(status: .ok))
             }
         

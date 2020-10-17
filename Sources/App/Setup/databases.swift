@@ -3,7 +3,8 @@ import Vapor
 /// Register your application's databases here.
 public func databases(_ app: Application) throws {
     // Configure a PostgreSQL database
-    let dbURI =  Environment.get(AppEnvironment.MONGO_DB_CONNECTION_URI.value) ?? "mongodb://localhost:27017/test"
+    let dbURI =  Environment.get(AppEnvironment.MONGO_DB_CONNECTION_URI.value) ?? "mongodb://localhost:32768/test"
     try app.databases.use(.mongo(connectionString: dbURI), as: .mongo)
+
     
 }

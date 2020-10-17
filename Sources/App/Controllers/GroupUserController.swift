@@ -27,8 +27,8 @@ final class GroupUserController: RouteCollection {
     func selectGroupAndUser(_ req: Request) throws -> EventLoopFuture<GroupUser> {
         guard let groupIDString = req.parameters.get("group_id"),
               let userIDString = req.parameters.get("user_id"),
-              let groupID = Int(groupIDString),
-              let userID = Int(userIDString)
+              let groupID = Group.IDValue(groupIDString),
+              let userID = User.IDValue(userIDString)
         else {throw Abort(.notFound)}
         let findGroupFuture = groupRepository.find(id: groupID)
             .flatMapThrowing { (result) -> Group in
@@ -119,7 +119,7 @@ final class GroupUserController: RouteCollection {
     func indexGroups(_ req: Request) throws -> EventLoopFuture<[Group]> {
         
         guard let userIDString = req.parameters.get("user_id"),
-              let userID = Int(userIDString)
+              let userID = User.IDValue(userIDString)
         else {throw Abort(.notFound)}
         
         let findUserFuture = userRepository.find(id: userID)
