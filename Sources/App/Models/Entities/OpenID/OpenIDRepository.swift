@@ -1,3 +1,1 @@
-import Vapor
-
-protocol OpenIDRepository: Service {}
+protocol OpenIDRepository {}

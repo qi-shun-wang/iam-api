@@ -1,12 +1,7 @@
 //MARK: Environment Constants
 enum AppEnvironment: String {
-    case PSQL_HOSTNAME
-    case PSQL_PORT
-    case PSQL_USERNAME
-    case PSQL_DATABASE_NAME
-    case PSQL_PASSWORD
-    case PSQL_LOGS
     
+    case MONGO_DB_CONNECTION_URI
     case COOKIE_SECURE
     case COOKIE_DOMAIN
     

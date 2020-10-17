@@ -1,6 +1,6 @@
 import Vapor
 
-protocol UserRepository: Service {
+protocol UserRepository {
     func save(user: User) -> EventLoopFuture<User>
     func find(id: Int) -> EventLoopFuture<User?>
     func find(accountID: String) -> EventLoopFuture<User?>

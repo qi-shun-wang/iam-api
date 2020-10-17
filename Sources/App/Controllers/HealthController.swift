@@ -1,20 +1,18 @@
 import Vapor
+import FluentMongoDriver
 
 final class HealthController: RouteCollection {
-    func boot(router: Router) throws {
-        let health = router.grouped("health")
+    
+    func boot(routes: RoutesBuilder) throws {
+        let health = routes.grouped("health")
         
         health.get("db", use: check)
-         
+        
     }
     
-    func check(_ req: Request) throws -> EventLoopFuture<HTTPResponse> {
-        return req.databaseConnection(to: .psql).map { (c)  in
-            if (c.isClosed){
-                throw Abort(.serviceUnavailable)
-            } else {
-                return HTTPResponse(status: .ok)
-            }
+    func check(_ req: Request) throws -> EventLoopFuture<Response> {
+        return req.db.withConnection { (db) -> EventLoopFuture<Response> in
+            return req.eventLoop.future(Response(status: .ok))
         }
     }
 }

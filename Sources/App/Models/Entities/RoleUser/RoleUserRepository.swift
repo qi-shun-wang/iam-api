@@ -1,6 +1,6 @@
 import Vapor
 
-protocol RoleUserRepository: Service {
+protocol RoleUserRepository {
     func findUsers(_ role: Role) -> EventLoopFuture<[User]>
     func findRoles(_ user: User) -> EventLoopFuture<[Role]>
     func findPivot(_ roleID: Int,_ userID: Int) -> EventLoopFuture<RoleUser?>

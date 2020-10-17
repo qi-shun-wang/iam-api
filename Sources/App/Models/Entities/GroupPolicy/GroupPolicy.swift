@@ -1,26 +1,33 @@
-import Foundation
+import Fluent
 
-final class GroupPolicy: Codable {
+final class GroupPolicy: Model {
+    
+    static var schema: String = "group_policy"
+    
+    @ID(key: .id)
     var id: Int?
     
-    var groupID: Int
-    var policyID: Int
+    @Parent(key: "group_id")
+    var group: Group
     
+    @Parent(key: "policy_id")
+    var policy: Policy
+    // When this GroupPolicy was created.
+    @Timestamp(key: "created_at", on: .create)
     var createdAt: Date?
+    // When this GroupPolicy was last updated.
+    @Timestamp(key: "updated_at", on: .update)
     var updatedAt: Date?
+    
+    @Timestamp(key: "deleted_at", on: .delete)
     var deletedAt: Date?
+
+    init() {}
     
-    init(id: Int? = nil
-        ,groupID: Int
-        ,policyID: Int
-        ) {
+    init(id: Int? = nil, group: Group, policy: Policy) throws {
         self.id = id
-        self.groupID = groupID
-        self.policyID = policyID
+        self.$group.id = try group.requireID()
+        self.$policy.id = try policy.requireID()
     }
     
-    init(_ left: Group, _ right: Policy) throws {
-        self.groupID = try left.requireID()
-        self.policyID = try right.requireID()
-    }
 }

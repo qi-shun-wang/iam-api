@@ -1,7 +1,7 @@
-import FluentPostgreSQL
+import Fluent
 
 final class PSQLOpenIDRepository: OpenIDRepository {
-    typealias DB = DatabaseConnectionPool<ConfiguredDatabase<PostgreSQLDatabase>>
+    typealias DB = Database
     
     let db: DB
 

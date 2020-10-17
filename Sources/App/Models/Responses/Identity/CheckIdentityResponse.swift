@@ -1,7 +1,7 @@
 import Vapor
 
 struct CheckIdentityResponse: Content {
-    let id: User.ID
+    let id: Int
     let groups: [String]
     let roles: [String]
     let policies: [String]

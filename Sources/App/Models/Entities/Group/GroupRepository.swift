@@ -1,6 +1,6 @@
 import Vapor
 
-protocol GroupRepository: Service {
+protocol GroupRepository {
     func save(group: Group) -> EventLoopFuture<Group>
     func find(id: Int) -> EventLoopFuture<Group?>
     func all() -> EventLoopFuture<[Group]>

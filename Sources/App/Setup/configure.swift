@@ -1,44 +1,31 @@
-import FluentPostgreSQL
-import Authentication
+import Vapor
+
 /// Called before your application initializes.
-public func configure(_ config: inout Config, _ env: inout Environment, _ services: inout Services) throws {
+public func configure(_ app: Application) throws {
     // Load .env file
-    Environment.dotenv()
+//    Environment.dotenv()
     
     /// Register providers first
-    try services.register(FluentPostgreSQLProvider())
+//    try services.register(FluentPostgreSQLProvider())
     /// Register a service for 'AuthenticationCache'
-    try services.register(AuthenticationProvider())
+//    try services.register(AuthenticationProvider())
     /// Register server config
-    var serverConfig = NIOServerConfig.default()
-    serverConfig.port = Environment.get(AppEnvironment.WEB_API_PORT.value, 8080)
-    services.register(serverConfig)
+    let port = Int(Environment.get(AppEnvironment.WEB_API_PORT.value) ?? "8080") ?? 8080
+    app.http.server.configuration.port = port
     
     /// Register routes to the router
-    services.register(Router.self) { (container) -> (EngineRouter) in
-        let router = EngineRouter.default()
-        try routes(router, container)
-        return router
-    }
-    
-    
+    try routes(app)
     /// Register middlewares
-    var middlewaresConfig = MiddlewareConfig()
-    try middlewares(config: &middlewaresConfig, services:&services)
-    services.register(middlewaresConfig)
-    
+    try middlewares(app)
     /// Register databases.
-    var databasesConfig = DatabasesConfig()
-    try databases(config: &databasesConfig)
-    services.register(databasesConfig)
+    try databases(app)
+    
     
     /// Register migrations
-    var migrationsConfig = MigrationConfig()
-    migrate(config: &migrationsConfig)
-    services.register(migrationsConfig)
+    migrate(app)
     
     /// Register Repositories
-    try setupRepositories(services: &services, config: &config)
+    try setupRepositories(app)
     
     
     
@@ -53,8 +40,8 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
     //    services.register(commandsConfig)
     
     // MARK: Custom Session
-    try setupCacheSessions(services: &services)
-    config.prefer(DatabaseKeyedCache<ConfiguredDatabase<PostgreSQLDatabase>>.self, for: KeyedCache.self)
+    try setupCacheSessions(app)
+    
     
     /// Register AWS Service
     //    try setupAWS(services: &services)

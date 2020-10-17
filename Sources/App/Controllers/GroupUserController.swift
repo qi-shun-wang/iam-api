@@ -1,5 +1,6 @@
 import Vapor
 
+
 final class GroupUserController: RouteCollection {
     private let groupUserRepository: GroupUserRepository
     private let groupRepository: GroupRepository
@@ -13,56 +14,126 @@ final class GroupUserController: RouteCollection {
         self.groupUserRepository = groupUserRepository
     }
     
-    func boot(router: Router) throws {
-        let allowedPolicy = Application.IAMAuthPolicyMiddleware(allowed: [IAMPolicyIdentifier.root])
-        let groups = router.grouped("groups").grouped(allowedPolicy)
-        let users = router.grouped("users").grouped(allowedPolicy)
-        users.get(User.ID.parameter, "groups", use: indexGroups)
-        groups.get(Group.ID.parameter, "users", use: indexUsers)
-        groups.delete(Group.ID.parameter, "users", User.ID.parameter, use: delete)
-        groups.post(Group.ID.parameter, "users", User.ID.parameter, use: create)
+    func boot(routes: RoutesBuilder) throws {
+        //        let allowedPolicy = Application.IAMAuthPolicyMiddleware(allowed: [IAMPolicyIdentifier.root])
+        let groups = routes.grouped("groups")//.grouped(allowedPolicy)
+        let users = routes.grouped("users")//.grouped(allowedPolicy)
+        users.get(":user_id", "groups", use: indexGroups)
+        groups.get(":group_id", "users", use: indexUsers)
+        groups.delete(":group_id", "users", ":user_id", use: delete)
+        groups.post(":group_id", "users", ":user_id", use: create)
     }
     
-    func create(_ req: Request) throws -> Future<HTTPResponse> {
-        let groupID = try req.parameters.next(Group.ID.self)
-        let userID = try req.parameters.next(User.ID.self)
-        return self.groupUserRepository.findPivot(groupID, userID).flatMap { result in
-            if result == nil {
-                return self.groupUserRepository
-                    .create(GroupUser(groupID: groupID, userID: userID))
-                    .transform(to: HTTPResponse(status: .ok))
+    func selectGroupAndUser(_ req: Request) throws -> EventLoopFuture<GroupUser> {
+        guard let groupIDString = req.parameters.get("group_id"),
+              let userIDString = req.parameters.get("user_id"),
+              let groupID = Int(groupIDString),
+              let userID = Int(userIDString)
+        else {throw Abort(.notFound)}
+        let findGroupFuture = groupRepository.find(id: groupID)
+            .flatMapThrowing { (result) -> Group in
+                if let group = result {
+                    return group
+                } else {
+                    throw Abort(.notFound)
+                }
             }
-            return req.future(HTTPResponse(status: .ok))
-        }
-    }
-    
-    func delete(_ req: Request) throws -> Future<HTTPResponse> {
-        let groupID = try req.parameters.next(Group.ID.self)
-        let userID = try req.parameters.next(User.ID.self)
-        return self.groupUserRepository.findPivot(groupID, userID).flatMap { result in
-            if let pivot = result {
-                return self.groupUserRepository
-                    .delete(pivot)
-                    .transform(to: HTTPResponse(status: .ok))
+        let findUserFuture = userRepository.find(id: userID)
+            .flatMapThrowing { (result) -> User in
+                if let user = result {
+                    return user
+                } else {
+                    throw Abort(.notFound)
+                }
             }
-            
-            return req.future(HTTPResponse(status: .ok))
-        }
+        
+        let pivotFuture = findGroupFuture
+            .and(findUserFuture)
+            .flatMapThrowing { (group, user) -> GroupUser in
+                return try GroupUser(group: group, user: user)
+            }
+        return pivotFuture
     }
     
-    func indexUsers(_ req: Request) throws -> Future<[User]> {
-        let groupID = try req.parameters.next(Group.ID.self)
-        return groupRepository.find(id: groupID).flatMap { (result) -> EventLoopFuture<[User]> in
-            guard let group = result else {throw Abort(HTTPResponseStatus.notFound)}
+    
+    func create(_ req: Request) throws -> EventLoopFuture<Response> {
+        let selectGroupAndUserFuture = try selectGroupAndUser(req)
+        
+        let findPivotFuture = selectGroupAndUserFuture.flatMap { (newPivot) -> EventLoopFuture<GroupUser> in
+            let createPivotFuture =   self.groupUserRepository.findPivot(newPivot.group.id!, newPivot.user.id!)
+                .flatMap { (result) -> EventLoopFuture<GroupUser> in
+                    if let pivot = result {
+                        return req.eventLoop.future(pivot)
+                    } else {
+                        return self.groupUserRepository.create(newPivot)
+                        
+                    }
+                }
+            return createPivotFuture
+        }
+        
+        let responseFuture = findPivotFuture.flatMapThrowing { (p) -> Response in
+            return Response(status:.ok)
+        }
+        return responseFuture
+    }
+    
+    func delete(_ req: Request) throws -> EventLoopFuture<Response> {
+        let selectGroupAndUserFuture = try selectGroupAndUser(req)
+        
+        let findPivotFuture = selectGroupAndUserFuture.flatMap { (newPivot) -> EventLoopFuture<GroupUser> in
+            return self.groupUserRepository.findPivot(newPivot.group.id!, newPivot.user.id!)
+                .flatMapThrowing { (result) -> GroupUser in
+                    if let pivot = result {
+                        return pivot
+                    } else {
+                        throw Abort(.notFound)
+                    }
+                }
+        }
+        let responseFuture = findPivotFuture.flatMap { (pivot) -> EventLoopFuture<Response> in
+            return self.groupUserRepository.delete(pivot).transform(to: Response(status:.ok))
+        }
+        
+        return responseFuture
+    }
+    
+    func indexUsers(_ req: Request) throws -> EventLoopFuture<[User]> {
+        
+        guard let groupIDString = req.parameters.get("group_id"),
+              let groupID = Int(groupIDString)
+        else {throw Abort(.notFound)}
+        let findGroupFuture = groupRepository.find(id: groupID)
+            .flatMapThrowing { (result) -> Group in
+                if let group = result {
+                    return group
+                } else {
+                    throw Abort(.notFound)
+                }
+            }
+        return findGroupFuture.flatMap { (group) -> EventLoopFuture<[User]> in
             return self.groupUserRepository.findUsers(group)
         }
     }
     
-    func indexGroups(_ req: Request) throws -> Future<[Group]> {
-        let userID = try req.parameters.next(User.ID.self)
-        return userRepository.find(id: userID).flatMap { (result) -> EventLoopFuture<[Group]> in
-            guard let user = result else {throw Abort(HTTPResponseStatus.notFound)}
+    func indexGroups(_ req: Request) throws -> EventLoopFuture<[Group]> {
+        
+        guard let userIDString = req.parameters.get("user_id"),
+              let userID = Int(userIDString)
+        else {throw Abort(.notFound)}
+        
+        let findUserFuture = userRepository.find(id: userID)
+            .flatMapThrowing { (result) -> User in
+                if let user = result {
+                    return user
+                } else {
+                    throw Abort(.notFound)
+                }
+            }
+        
+        return findUserFuture.flatMap { (user) -> EventLoopFuture<[Group]> in
             return self.groupUserRepository.findGroups(user)
         }
+        
     }
 }

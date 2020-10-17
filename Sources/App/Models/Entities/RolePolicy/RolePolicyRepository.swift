@@ -1,6 +1,6 @@
 import Vapor
 
-protocol RolePolicyRepository: Service {
+protocol RolePolicyRepository {
     func findPolicies(in roles: [Role]) -> EventLoopFuture<[Policy]>
     func findPolicies(_ role: Role) -> EventLoopFuture<[Policy]>
     func findRoles(_ policy: Policy) -> EventLoopFuture<[Role]>

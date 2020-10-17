@@ -1,6 +1,6 @@
 import Vapor
 
-protocol GroupPolicyRepository: Service {
+protocol GroupPolicyRepository {
     func findPolicies(in groups: [Group]) -> EventLoopFuture<[Policy]>
     func findPolicies(_ group: Group) -> EventLoopFuture<[Policy]>
     func findGroups(_ policy: Policy) -> EventLoopFuture<[Group]>

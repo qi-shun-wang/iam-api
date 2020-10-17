@@ -8,47 +8,51 @@ final class UserController: RouteCollection {
         self.userRepository = userRepository
     }
     
-    func boot(router: Router) throws {
-        let allowedPolicy = Application.IAMAuthPolicyMiddleware(allowed: [IAMPolicyIdentifier.root])
-        let users = router.grouped("users").grouped(allowedPolicy)
+    func boot(routes: RoutesBuilder) throws {
+        //        let allowedPolicy = Application.IAMAuthPolicyMiddleware(allowed: [IAMPolicyIdentifier.root])
+        let users = routes.grouped("users")//.grouped(allowedPolicy)
         users.post(use: create)
         users.get(use: index)
-        users.get(User.ID.parameter, use: select)
-        users.put(User.ID.parameter, use: update)
-        users.delete(User.ID.parameter, use: delete)
+        users.get(":id", use: select)
+        users.put(":id", use: update)
+        users.delete(":id", use: delete)
     }
     
-    func create( _ req: Request) throws -> Future<User> {
-        return try req.content.decode(CreateUserRequest.self).flatMap { form  in
-            let user = User(accountID: form.accountID,
-                            password: form.password,
-                            accessID: UUID().uuidString,
-                            accessKey: UUID().uuidString)
-            return self.userRepository.save(user: user)
-        }
+    func create( _ req: Request) throws -> EventLoopFuture<User> {
+        let form = try req.content.decode(CreateUserRequest.self)
+        
+        let user = User(accountID: form.accountID,
+                        password: form.password,
+                        accessID: UUID().uuidString,
+                        accessKey: UUID().uuidString)
+        return self.userRepository.save(user: user)
     }
     
-    func select( _ req: Request) throws -> Future<User> {
-        let id = try req.parameters.next(User.ID.self)
-        return self.userRepository.find(id: id).map { result in
-            guard let user = result else { throw Abort(HTTPResponseStatus.notFound) }
-            return user
-        }
+    func select( _ req: Request) throws -> EventLoopFuture<User> {
+        guard let idString = req.parameters.get("id"),
+              let id = Int(idString)
+        else {throw Abort(.notFound)}
+        
+        let findUserFuture = self.userRepository.find(id: id)
+            .flatMapThrowing { (result) -> User in
+                if let user = result {
+                    return user
+                } else {
+                    throw Abort(.notFound)
+                }
+            }
+        return findUserFuture
     }
     
-    func index( _ req: Request) throws -> Future<[User]> {
+    func index( _ req: Request) throws -> EventLoopFuture<[User]> {
         return self.userRepository.all()
     }
     
-    func update( _ req: Request) throws -> Future<User> {
-        let userID = try req.parameters.next(User.ID.self)
-        let userFuture = self.userRepository.find(id: userID)
-            .map { (result) -> User in
-                guard let user = result else { throw Abort(.notFound)}
-                return user
-        }
-        return userFuture.flatMap { user in
-            return try req.content.decode(UpdateUserRequest.self).flatMap { form  in
+    func update( _ req: Request) throws -> EventLoopFuture<User> {
+        let form = try req.content.decode(UpdateUserRequest.self)
+        let findUserFuture = try select(req)
+        let updateUserFuture = findUserFuture
+            .flatMap { (user) -> EventLoopFuture<User> in
                 if let new = form.accountID {
                     user.accountID = new
                 }
@@ -57,19 +61,18 @@ final class UserController: RouteCollection {
                 }
                 return self.userRepository.save(user: user)
             }
-        }
+        return updateUserFuture
     }
     
-    func delete( _ req: Request) throws -> Future<HTTPResponse> {
-        let userID = try req.parameters.next(User.ID.self)
-        let userFuture = self.userRepository.find(id: userID)
-            .map { (result) -> User in
-                guard let user = result else { throw Abort(.notFound)}
-                return user
-        }
-        return userFuture.flatMap { user in
-            return self.userRepository.delete(user: user).transform(to: HTTPResponse(status: .ok))
-        }
+    func delete( _ req: Request) throws -> EventLoopFuture<Response> {
+        let findUserFuture = try select(req)
+        let deleteUserFuture = findUserFuture
+            .flatMap { (user) -> EventLoopFuture<Response> in
+                return self.userRepository.delete(user: user)
+                    .transform(to: Response(status: .ok))
+            }
+        
+        return deleteUserFuture
         
     }
 }

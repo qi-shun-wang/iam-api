@@ -7,7 +7,7 @@ final class OpenIDController: RouteCollection {
         self.openIDRepository = openIDRepository
     }
     
-    func boot(router: Router) throws {
+    func boot(routes: RoutesBuilder) throws {
         
     }
 }
