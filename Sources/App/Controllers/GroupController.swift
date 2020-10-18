@@ -26,7 +26,7 @@ final class GroupController: RouteCollection {
     
     func select( _ req: Request) throws -> EventLoopFuture<Group> {
         guard let idString = req.parameters.get("id"),
-              let id = Int(idString)
+              let id = Group.IDValue(idString)
         else {throw Abort(.notFound)}
         
         let findGroupFuture = self.groupRepository.find(id: id)

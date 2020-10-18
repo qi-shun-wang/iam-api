@@ -26,8 +26,8 @@ final class RoleUserController: RouteCollection {
     func selectRoleAndUser(_ req: Request) throws -> EventLoopFuture<RoleUser> {
         guard let roleIDString = req.parameters.get("role_id"),
               let userIDString = req.parameters.get("user_id"),
-              let roleID = Int(roleIDString),
-              let userID = UUID(userIDString)
+              let roleID = Role.IDValue(roleIDString),
+              let userID = User.IDValue(userIDString)
         else {throw Abort(.notFound)}
         let findRoleFuture = roleRepository.find(id: roleID)
             .flatMapThrowing { (result) -> Role in
@@ -100,7 +100,7 @@ final class RoleUserController: RouteCollection {
     
     func indexUsers(_ req: Request) throws -> EventLoopFuture<[User]> {
         guard let roleIDString = req.parameters.get("role_id"),
-              let roleID = Int(roleIDString)
+              let roleID = Role.IDValue(roleIDString)
         else {throw Abort(.notFound)}
         let findRoleFuture = roleRepository.find(id: roleID)
             .flatMapThrowing { (result) -> Role in

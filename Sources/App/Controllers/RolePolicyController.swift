@@ -26,8 +26,8 @@ final class RolePolicyController: RouteCollection {
     func selectRoleAndPolicy(_ req: Request) throws -> EventLoopFuture<RolePolicy> {
         guard let roleIDString = req.parameters.get("role_id"),
               let policyIDString = req.parameters.get("policy_id"),
-              let roleID = Int(roleIDString),
-              let policyID = Int(policyIDString)
+              let roleID = Role.IDValue(roleIDString),
+              let policyID = Policy.IDValue(policyIDString)
         else {throw Abort(.notFound)}
         let findRoleFuture = roleRepository.find(id: roleID)
             .flatMapThrowing { (result) -> Role in
@@ -100,7 +100,7 @@ final class RolePolicyController: RouteCollection {
     func indexPolicies(_ req: Request) throws -> EventLoopFuture<[Policy]> {
         
         guard let roleIDString = req.parameters.get("role_id"),
-              let roleID = Int(roleIDString)
+              let roleID = Role.IDValue(roleIDString)
         else {throw Abort(.notFound)}
         let findRoleFuture = roleRepository.find(id: roleID)
             .flatMapThrowing { (result) -> Role in
@@ -118,7 +118,7 @@ final class RolePolicyController: RouteCollection {
     func indexRoles(_ req: Request) throws -> EventLoopFuture<[Role]> {
         
         guard let policyIDString = req.parameters.get("policy_id"),
-              let policyID = Int(policyIDString)
+              let policyID = Policy.IDValue(policyIDString)
         else {throw Abort(.notFound)}
         
         let findPolicyFuture = policyRepository.find(id: policyID)

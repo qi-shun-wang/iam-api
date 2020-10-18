@@ -1,3 +1,4 @@
+import Foundation
 import Fluent
 
 final class RoleUser: Model {
@@ -5,7 +6,7 @@ final class RoleUser: Model {
     static var schema: String = "role_user"
     
     @ID(key: .id)
-    var id: Int?
+    var id: UUID?
     
     @Parent(key: "role_id")
     var role: Role
@@ -24,7 +25,7 @@ final class RoleUser: Model {
     
     init() {}
     
-    init(id: Int? = nil,  role: Role,user: User) throws {
+    init(id: RoleUser.IDValue? = nil,  role: Role,user: User) throws {
         self.id = id
         self.$role.id = try role.requireID()
         self.$user.id = try user.requireID()

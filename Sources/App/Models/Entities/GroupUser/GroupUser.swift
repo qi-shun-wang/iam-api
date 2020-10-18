@@ -1,3 +1,4 @@
+import Foundation
 import Fluent
 
 final class GroupUser: Model {
@@ -5,7 +6,7 @@ final class GroupUser: Model {
     static var schema: String = "group_user"
     
     @ID(key: .id)
-    var id: Int?
+    var id: UUID?
     
     @Parent(key: "group_id")
     var group: Group
@@ -24,7 +25,7 @@ final class GroupUser: Model {
 
     init() {}
     
-    init(id: Int? = nil, group: Group, user: User) throws {
+    init(id: GroupUser.IDValue? = nil, group: Group, user: User) throws {
         self.id = id
         self.$group.id = try group.requireID()
         self.$user.id = try user.requireID()

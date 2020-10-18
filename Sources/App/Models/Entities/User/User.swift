@@ -2,7 +2,6 @@ import Foundation
 import Fluent
 
 final class User: Model {
-    typealias IDValue = UUID
     
     static var schema: String = "users"
     

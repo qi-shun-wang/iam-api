@@ -25,7 +25,7 @@ final class RoleController: RouteCollection {
     
     func select( _ req: Request) throws -> EventLoopFuture<Role> {
         guard let idString = req.parameters.get("id"),
-              let id = Int(idString)
+              let id = Role.IDValue(idString)
         else {throw Abort(.notFound)}
         
         let findRoleFuture = self.roleRepository.find(id: id)

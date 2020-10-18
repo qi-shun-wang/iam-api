@@ -26,8 +26,8 @@ final class GroupPolicyController: RouteCollection {
     func selectGroupAndPolicy(_ req: Request) throws -> EventLoopFuture<GroupPolicy> {
         guard let groupIDString = req.parameters.get("group_id"),
               let policyIDString = req.parameters.get("policy_id"),
-              let groupID = Int(groupIDString),
-              let policyID = Int(policyIDString)
+              let groupID = Group.IDValue(groupIDString),
+              let policyID = Policy.IDValue(policyIDString)
         else {throw Abort(.notFound)}
         let findGroupFuture = groupRepository.find(id: groupID)
             .flatMapThrowing { (result) -> Group in
@@ -99,7 +99,7 @@ final class GroupPolicyController: RouteCollection {
     
     func indexPolicies(_ req: Request) throws -> EventLoopFuture<[Policy]> {
         guard let groupIDString = req.parameters.get("group_id"),
-              let groupID = Int(groupIDString)
+              let groupID = Group.IDValue(groupIDString)
         else {throw Abort(.notFound)}
         let findGroupFuture = groupRepository.find(id: groupID)
             .flatMapThrowing { (result) -> Group in
@@ -116,7 +116,7 @@ final class GroupPolicyController: RouteCollection {
     
     func indexGroups(_ req: Request) throws -> EventLoopFuture<[Group]> {
         guard let policyIDString = req.parameters.get("policy_id"),
-              let policyID = Int(policyIDString)
+              let policyID = Policy.IDValue(policyIDString)
         else {throw Abort(.notFound)}
         
         let findPolicyFuture = policyRepository.find(id: policyID)

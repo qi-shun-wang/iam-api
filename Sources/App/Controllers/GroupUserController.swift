@@ -101,7 +101,7 @@ final class GroupUserController: RouteCollection {
     func indexUsers(_ req: Request) throws -> EventLoopFuture<[User]> {
         
         guard let groupIDString = req.parameters.get("group_id"),
-              let groupID = Int(groupIDString)
+              let groupID = Group.IDValue(groupIDString)
         else {throw Abort(.notFound)}
         let findGroupFuture = groupRepository.find(id: groupID)
             .flatMapThrowing { (result) -> Group in

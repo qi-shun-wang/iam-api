@@ -30,7 +30,7 @@ final class IdentityController: RouteCollection {
 //        let allowedPolicy = Application.IAMAuthPolicyMiddleware(allowed: [IAMPolicyIdentifier.root])
 //        let token = User.tokenAuthMiddleware()
 //        let password = User.basicAuthMiddleware(using: PlaintextVerifier())
-        let identity = routes.grouped("identity")
+//        let identity = routes.grouped("identity")
 //        identity.grouped(allowedPolicy).post(use: create)
 //
 //        identity.grouped(token).get("check", use: check)

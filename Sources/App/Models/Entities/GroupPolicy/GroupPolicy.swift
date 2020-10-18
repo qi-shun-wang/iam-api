@@ -1,3 +1,4 @@
+import Foundation
 import Fluent
 
 final class GroupPolicy: Model {
@@ -5,7 +6,7 @@ final class GroupPolicy: Model {
     static var schema: String = "group_policy"
     
     @ID(key: .id)
-    var id: Int?
+    var id: UUID?
     
     @Parent(key: "group_id")
     var group: Group
@@ -24,7 +25,7 @@ final class GroupPolicy: Model {
 
     init() {}
     
-    init(id: Int? = nil, group: Group, policy: Policy) throws {
+    init(id: GroupPolicy.IDValue? = nil, group: Group, policy: Policy) throws {
         self.id = id
         self.$group.id = try group.requireID()
         self.$policy.id = try policy.requireID()

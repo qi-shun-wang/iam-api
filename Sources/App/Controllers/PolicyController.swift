@@ -26,7 +26,7 @@ final class PolicyController: RouteCollection {
     
     func select( _ req: Request) throws -> EventLoopFuture<Policy> {
         guard let idString = req.parameters.get("id"),
-              let id = Int(idString)
+              let id = Policy.IDValue(idString)
         else {throw Abort(HTTPResponseStatus.notFound)}
         let findPolicyFuture = self.policyRepository.find(id: id)
             .flatMapThrowing { (result) -> Policy in

@@ -27,9 +27,9 @@ public func middlewares(_ app: Application) throws {
     let corsMiddleware = CORSMiddleware(configuration: corsConfig)
     
     
-    let iamHostname = Environment.get(AppEnvironment.IAM_HOSTNAME.value)
-    let iamPort = Environment.get(AppEnvironment.IAM_PORT.value)
-    let iamEnable = Environment.get(AppEnvironment.IAM_ENABLE.value)
+//    let iamHostname = Environment.get(AppEnvironment.IAM_HOSTNAME.value)
+//    let iamPort = Environment.get(AppEnvironment.IAM_PORT.value)
+//    let iamEnable = Environment.get(AppEnvironment.IAM_ENABLE.value)
     
 //    let iamConfig = IAMConfig(hostname: iamHostname,
 //                              port: iamPort,

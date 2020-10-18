@@ -1,3 +1,4 @@
+import Foundation
 import Fluent
 
 final class RolePolicy: Model {
@@ -5,7 +6,7 @@ final class RolePolicy: Model {
     static var schema: String = "role_policy"
     
     @ID(key: .id)
-    var id: Int?
+    var id: UUID?
     
     @Parent(key: "role_id")
     var role: Role
@@ -24,7 +25,7 @@ final class RolePolicy: Model {
     
     init() {}
     
-    init(id: Int? = nil,  role: Role,policy: Policy) throws {
+    init(id: RolePolicy.IDValue? = nil,  role: Role,policy: Policy) throws {
         self.id = id
         self.$role.id = try role.requireID()
         self.$policy.id = try policy.requireID()
