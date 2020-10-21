@@ -1,10 +1,7 @@
 import Fluent
 
-struct MongoDBRoleUserRepository: RoleUserRepository {
-   
-    typealias DB = Database
-    
-    let db: DB
+struct DatabaseRoleUserRepository: RoleUserRepository {
+    let db: Database
     
     func findUsers(_ role: Role) -> EventLoopFuture<[User]> {
         return db.withConnection { conn -> EventLoopFuture<[User]> in

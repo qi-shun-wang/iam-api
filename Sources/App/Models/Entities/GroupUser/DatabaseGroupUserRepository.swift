@@ -1,9 +1,7 @@
 import Fluent
 
-struct MongoDBGroupUserRepository: GroupUserRepository {
-    typealias DB = Database
-    
-    let db: DB
+struct DatabaseGroupUserRepository: GroupUserRepository {
+    let db: Database
     
     func findUsers(_ group: Group) -> EventLoopFuture<[User]> {
         return db.withConnection { conn -> EventLoopFuture<[User]> in

@@ -1,8 +1,7 @@
 import Fluent
 
-struct MongoDBPolicyRepository: PolicyRepository {
-    typealias DB = Database
-    let db: DB
+struct DatabasePolicyRepository: PolicyRepository {
+    let db: Database
     
     func save(policy: Policy) -> EventLoopFuture<Policy> {
         return db.withConnection { conn in

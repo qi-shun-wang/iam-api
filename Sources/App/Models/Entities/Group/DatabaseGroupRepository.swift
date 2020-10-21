@@ -1,9 +1,7 @@
 import Fluent
 
-struct MongoDBGroupRepository: GroupRepository {
-    typealias DB = Database
-    
-    let db: DB
+struct DatabaseGroupRepository: GroupRepository {
+    let db: Database
 
     func save(group: Group) -> EventLoopFuture<Group> {
         return db.withConnection { conn in

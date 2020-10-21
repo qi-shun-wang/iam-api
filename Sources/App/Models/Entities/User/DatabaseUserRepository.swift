@@ -1,10 +1,8 @@
 import Foundation
 import Fluent
 
-struct MongoDBUserRepository: UserRepository {
-    typealias DB = Database
-    
-    let db: DB
+struct DatabaseUserRepository: UserRepository {
+    let db: Database
 
     func save(user: User) -> EventLoopFuture<User> {
         return db.withConnection { conn in

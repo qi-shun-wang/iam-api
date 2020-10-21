@@ -1,9 +1,7 @@
 import Fluent
 
-struct MongoDBRoleRepository: RoleRepository {
-    typealias DB = Database
-    
-    let db: DB
+struct DatabaseRoleRepository: RoleRepository {
+    let db: Database
     
     func save(role: Role) -> EventLoopFuture<Role> {
         return db.withConnection { conn in

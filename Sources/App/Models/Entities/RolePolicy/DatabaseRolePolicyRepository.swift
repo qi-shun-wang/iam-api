@@ -1,9 +1,7 @@
 import Fluent
 
-struct MongoDBRolePolicyRepository: RolePolicyRepository {
-    typealias DB = Database
-    
-    let db: DB
+struct DatabaseRolePolicyRepository: RolePolicyRepository {
+    let db: Database
     
 //    func findPolicies(in roles: [Role]) -> EventLoopFuture<[Policy]> {
 //        return db.withConnection { conn -> EventLoopFuture<[Policy]> in

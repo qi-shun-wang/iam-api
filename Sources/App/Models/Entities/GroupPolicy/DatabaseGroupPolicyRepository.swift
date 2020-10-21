@@ -1,10 +1,7 @@
 import Fluent
 
-struct MongoDBGroupPolicyRepository: GroupPolicyRepository {
-    
-    typealias DB = Database
-    
-    let db: DB
+struct DatabaseGroupPolicyRepository: GroupPolicyRepository {
+    let db: Database
     
     
     //    func findPolicies(in groups: [Group]) -> EventLoopFuture<[Policy]> {
