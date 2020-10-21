@@ -1,15 +1,11 @@
 import Foundation
 import Fluent
 
-final class MongoDBUserRepository: UserRepository {
+struct MongoDBUserRepository: UserRepository {
     typealias DB = Database
     
     let db: DB
-    
-    init(_ db: DB) {
-        self.db = db
-    }
-    
+
     func save(user: User) -> EventLoopFuture<User> {
         return db.withConnection { conn in
             return user.save(on: conn).flatMapThrowing { () -> User in

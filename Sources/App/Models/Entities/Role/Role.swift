@@ -11,11 +11,16 @@ final class Role: Model {
     @Field(key: "type")
     var type: String
     
+    @Siblings(through: RolePolicy.self, from: \.$role, to: \.$policy)
+    public var policies: [Policy]
+    
+    @Siblings(through: RoleUser.self, from: \.$role, to: \.$user)
+    public var users: [User]
+    
     init() {}
     
     init(id: Role.IDValue? = nil, type: String) {
         self.id = id
         self.type = type
     }
-    
 }

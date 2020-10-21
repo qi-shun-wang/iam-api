@@ -1,11 +1,6 @@
 import Vapor 
 
 final class RoleController: RouteCollection {
-    private let roleRepository: RoleRepository
-    
-    init(roleRepository: RoleRepository) {
-        self.roleRepository = roleRepository
-    }
     
     func boot(routes: RoutesBuilder) throws {
         //        let allowedPolicy = Application.IAMAuthPolicyMiddleware(allowed: [IAMPolicyIdentifier.root])
@@ -20,7 +15,7 @@ final class RoleController: RouteCollection {
     func create( _ req: Request) throws -> EventLoopFuture<Role> {
         let form = try req.content.decode(CreateRoleRequest.self)
         
-        return self.roleRepository.save(role: Role(type: form.type))
+        return req.roleRepository.save(role: Role(type: form.type))
     }
     
     func select( _ req: Request) throws -> EventLoopFuture<Role> {
@@ -28,7 +23,7 @@ final class RoleController: RouteCollection {
               let id = Role.IDValue(idString)
         else {throw Abort(.notFound)}
         
-        let findRoleFuture = self.roleRepository.find(id: id)
+        let findRoleFuture = req.roleRepository.find(id: id)
             .flatMapThrowing { (result) -> Role in
                 if let role = result {
                     return role
@@ -41,7 +36,7 @@ final class RoleController: RouteCollection {
     }
     
     func index( _ req: Request) throws -> EventLoopFuture<[Role]> {
-        return self.roleRepository.all()
+        return req.roleRepository.all()
     }
     
     func update( _ req: Request) throws -> EventLoopFuture<Role> {
@@ -54,7 +49,7 @@ final class RoleController: RouteCollection {
                 if let new = form.type {
                     role.type = new
                 }
-                return self.roleRepository.save(role: role)
+                return req.roleRepository.save(role: role)
             }
         return updateRoleFuture
     }
@@ -64,7 +59,7 @@ final class RoleController: RouteCollection {
         
         let deleteRoleFuture = findRoleFuture
             .flatMap { (role) -> EventLoopFuture<Response> in
-                return self.roleRepository.delete(role: role)
+                return req.roleRepository.delete(role: role)
                     .transform(to: Response(status: .ok))
             }
         

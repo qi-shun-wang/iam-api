@@ -1,17 +1,6 @@
 import Vapor
 
 final class RoleUserController: RouteCollection {
-    private let roleUserRepository: RoleUserRepository
-    private let roleRepository: RoleRepository
-    private let userRepository: UserRepository
-    
-    init(roleRepository: RoleRepository,
-         userRepository: UserRepository,
-         roleUserRepository: RoleUserRepository) {
-        self.roleRepository = roleRepository
-        self.userRepository = userRepository
-        self.roleUserRepository = roleUserRepository
-    }
     
     func boot(routes: RoutesBuilder) throws {
         //        let allowedPolicy = Application.IAMAuthPolicyMiddleware(allowed: [IAMPolicyIdentifier.root])
@@ -29,7 +18,7 @@ final class RoleUserController: RouteCollection {
               let roleID = Role.IDValue(roleIDString),
               let userID = User.IDValue(userIDString)
         else {throw Abort(.notFound)}
-        let findRoleFuture = roleRepository.find(id: roleID)
+        let findRoleFuture = req.roleRepository.find(id: roleID)
             .flatMapThrowing { (result) -> Role in
                 if let role = result {
                     return role
@@ -37,7 +26,7 @@ final class RoleUserController: RouteCollection {
                     throw Abort(.notFound)
                 }
             }
-        let findUserFuture = userRepository.find(id: userID)
+        let findUserFuture = req.userRepository.find(id: userID)
             .flatMapThrowing { (result) -> User in
                 if let user = result {
                     return user
@@ -58,13 +47,13 @@ final class RoleUserController: RouteCollection {
         let selectRoleAndUserFuture = try selectRoleAndUser(req)
         
         let findPivotFuture = selectRoleAndUserFuture.flatMap { (newPivot) -> EventLoopFuture<RoleUser> in
-            let createPivotFuture = self.roleUserRepository
-                .findPivot(newPivot.role.id!, newPivot.user.id!)
+            let createPivotFuture = req.roleUserRepository
+                .findPivot(newPivot.role, newPivot.user)
                 .flatMap { (result) -> EventLoopFuture<RoleUser> in
                     if let pivot = result {
                         return req.eventLoop.future(pivot)
                     } else {
-                        return self.roleUserRepository.create(newPivot)
+                        return req.roleUserRepository.create(newPivot)
                         
                     }
                 }
@@ -81,8 +70,8 @@ final class RoleUserController: RouteCollection {
         let selectRoleAndUserFuture = try selectRoleAndUser(req)
         
         let findPivotFuture = selectRoleAndUserFuture.flatMap { (newPivot) -> EventLoopFuture<RoleUser> in
-            return self.roleUserRepository
-                .findPivot(newPivot.role.id!, newPivot.user.id!)
+            return req.roleUserRepository
+                .findPivot(newPivot.role, newPivot.user)
                 .flatMapThrowing { (result) -> RoleUser in
                     if let pivot = result {
                         return pivot
@@ -92,7 +81,7 @@ final class RoleUserController: RouteCollection {
                 }
         }
         let responseFuture = findPivotFuture.flatMap { (pivot) -> EventLoopFuture<Response> in
-            return self.roleUserRepository.delete(pivot).transform(to: Response(status:.ok))
+            return req.roleUserRepository.delete(pivot).transform(to: Response(status:.ok))
         }
         
         return responseFuture
@@ -102,7 +91,7 @@ final class RoleUserController: RouteCollection {
         guard let roleIDString = req.parameters.get("role_id"),
               let roleID = Role.IDValue(roleIDString)
         else {throw Abort(.notFound)}
-        let findRoleFuture = roleRepository.find(id: roleID)
+        let findRoleFuture = req.roleRepository.find(id: roleID)
             .flatMapThrowing { (result) -> Role in
                 if let role = result {
                     return role
@@ -111,7 +100,7 @@ final class RoleUserController: RouteCollection {
                 }
             }
         return findRoleFuture.flatMap { (role) -> EventLoopFuture<[User]> in
-            return self.roleUserRepository.findUsers(role)
+            return req.roleUserRepository.findUsers(role)
         }
     }
     
@@ -120,7 +109,7 @@ final class RoleUserController: RouteCollection {
               let userID = User.IDValue(userIDString)
         else {throw Abort(.notFound)}
         
-        let findUserFuture = userRepository.find(id: userID)
+        let findUserFuture = req.userRepository.find(id: userID)
             .flatMapThrowing { (result) -> User in
                 if let user = result {
                     return user
@@ -130,7 +119,7 @@ final class RoleUserController: RouteCollection {
             }
         
         return findUserFuture.flatMap { (user) -> EventLoopFuture<[Role]> in
-            return self.roleUserRepository.findRoles(user)
+            return req.roleUserRepository.findRoles(user)
         }
     }
 }

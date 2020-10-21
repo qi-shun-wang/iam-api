@@ -2,18 +2,7 @@ import Vapor
 
 
 final class GroupUserController: RouteCollection {
-    private let groupUserRepository: GroupUserRepository
-    private let groupRepository: GroupRepository
-    private let userRepository: UserRepository
-    
-    init(groupRepository: GroupRepository,
-         userRepository: UserRepository,
-         groupUserRepository: GroupUserRepository) {
-        self.groupRepository = groupRepository
-        self.userRepository = userRepository
-        self.groupUserRepository = groupUserRepository
-    }
-    
+  
     func boot(routes: RoutesBuilder) throws {
         //        let allowedPolicy = Application.IAMAuthPolicyMiddleware(allowed: [IAMPolicyIdentifier.root])
         let groups = routes.grouped("groups")//.grouped(allowedPolicy)
@@ -30,7 +19,7 @@ final class GroupUserController: RouteCollection {
               let groupID = Group.IDValue(groupIDString),
               let userID = User.IDValue(userIDString)
         else {throw Abort(.notFound)}
-        let findGroupFuture = groupRepository.find(id: groupID)
+        let findGroupFuture = req.groupRepository.find(id: groupID)
             .flatMapThrowing { (result) -> Group in
                 if let group = result {
                     return group
@@ -38,7 +27,7 @@ final class GroupUserController: RouteCollection {
                     throw Abort(.notFound)
                 }
             }
-        let findUserFuture = userRepository.find(id: userID)
+        let findUserFuture = req.userRepository.find(id: userID)
             .flatMapThrowing { (result) -> User in
                 if let user = result {
                     return user
@@ -60,12 +49,13 @@ final class GroupUserController: RouteCollection {
         let selectGroupAndUserFuture = try selectGroupAndUser(req)
         
         let findPivotFuture = selectGroupAndUserFuture.flatMap { (newPivot) -> EventLoopFuture<GroupUser> in
-            let createPivotFuture =   self.groupUserRepository.findPivot(newPivot.group.id!, newPivot.user.id!)
+            let createPivotFuture = req.groupUserRepository
+                .findPivot(newPivot.group, newPivot.user)
                 .flatMap { (result) -> EventLoopFuture<GroupUser> in
                     if let pivot = result {
                         return req.eventLoop.future(pivot)
                     } else {
-                        return self.groupUserRepository.create(newPivot)
+                        return req.groupUserRepository.create(newPivot)
                         
                     }
                 }
@@ -82,7 +72,8 @@ final class GroupUserController: RouteCollection {
         let selectGroupAndUserFuture = try selectGroupAndUser(req)
         
         let findPivotFuture = selectGroupAndUserFuture.flatMap { (newPivot) -> EventLoopFuture<GroupUser> in
-            return self.groupUserRepository.findPivot(newPivot.group.id!, newPivot.user.id!)
+            return req.groupUserRepository
+                .findPivot(newPivot.group, newPivot.user)
                 .flatMapThrowing { (result) -> GroupUser in
                     if let pivot = result {
                         return pivot
@@ -92,7 +83,7 @@ final class GroupUserController: RouteCollection {
                 }
         }
         let responseFuture = findPivotFuture.flatMap { (pivot) -> EventLoopFuture<Response> in
-            return self.groupUserRepository.delete(pivot).transform(to: Response(status:.ok))
+            return req.groupUserRepository.delete(pivot).transform(to: Response(status:.ok))
         }
         
         return responseFuture
@@ -103,7 +94,7 @@ final class GroupUserController: RouteCollection {
         guard let groupIDString = req.parameters.get("group_id"),
               let groupID = Group.IDValue(groupIDString)
         else {throw Abort(.notFound)}
-        let findGroupFuture = groupRepository.find(id: groupID)
+        let findGroupFuture = req.groupRepository.find(id: groupID)
             .flatMapThrowing { (result) -> Group in
                 if let group = result {
                     return group
@@ -112,7 +103,7 @@ final class GroupUserController: RouteCollection {
                 }
             }
         return findGroupFuture.flatMap { (group) -> EventLoopFuture<[User]> in
-            return self.groupUserRepository.findUsers(group)
+            return req.groupUserRepository.findUsers(group)
         }
     }
     
@@ -122,7 +113,7 @@ final class GroupUserController: RouteCollection {
               let userID = User.IDValue(userIDString)
         else {throw Abort(.notFound)}
         
-        let findUserFuture = userRepository.find(id: userID)
+        let findUserFuture = req.userRepository.find(id: userID)
             .flatMapThrowing { (result) -> User in
                 if let user = result {
                     return user
@@ -132,7 +123,7 @@ final class GroupUserController: RouteCollection {
             }
         
         return findUserFuture.flatMap { (user) -> EventLoopFuture<[Group]> in
-            return self.groupUserRepository.findGroups(user)
+            return req.groupUserRepository.findGroups(user)
         }
         
     }

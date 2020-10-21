@@ -3,29 +3,7 @@ import Crypto
 //import Authentication
 
 final class IdentityController: RouteCollection {
-    
-    private let roleRepository: RoleRepository
-    private let userRepository: UserRepository
-    private let groupUserRepository: GroupUserRepository
-    private let roleUserRepository: RoleUserRepository
-    private let rolePolicyRepository: RolePolicyRepository
-    private let groupPolicyRepository: GroupPolicyRepository
-    
-    init(roleRepository: RoleRepository,
-         userRepository: UserRepository,
-         roleUserRepository: RoleUserRepository,
-         rolePolicyRepository: RolePolicyRepository,
-         groupPolicyRepository: GroupPolicyRepository,
-         groupUserRepository: GroupUserRepository) {
-        
-        self.roleRepository = roleRepository
-        self.userRepository = userRepository
-        self.roleUserRepository = roleUserRepository
-        self.rolePolicyRepository = rolePolicyRepository
-        self.groupPolicyRepository = groupPolicyRepository
-        self.groupUserRepository = groupUserRepository
-    }
-    
+
     func boot(routes: RoutesBuilder) throws {
 //        let allowedPolicy = Application.IAMAuthPolicyMiddleware(allowed: [IAMPolicyIdentifier.root])
 //        let token = User.tokenAuthMiddleware()

@@ -2,12 +2,6 @@ import Vapor
 
 final class GroupController: RouteCollection {
     
-    private let groupRepository: GroupRepository
-    
-    init(groupRepository: GroupRepository) {
-        self.groupRepository = groupRepository
-    }
-    
     func boot(routes: RoutesBuilder) throws {
         //        let allowedPolicy = Application.IAMAuthPolicyMiddleware(allowed: [IAMPolicyIdentifier.root])
         let groups = routes.grouped("groups")//.grouped(allowedPolicy)
@@ -21,7 +15,7 @@ final class GroupController: RouteCollection {
     func create( _ req: Request) throws -> EventLoopFuture<Group> {
         let form = try req.content.decode(CreateGroupRequest.self)
         
-        return self.groupRepository.save(group: Group(name: form.name))
+        return req.groupRepository.save(group: Group(name: form.name))
     }
     
     func select( _ req: Request) throws -> EventLoopFuture<Group> {
@@ -29,7 +23,7 @@ final class GroupController: RouteCollection {
               let id = Group.IDValue(idString)
         else {throw Abort(.notFound)}
         
-        let findGroupFuture = self.groupRepository.find(id: id)
+        let findGroupFuture = req.groupRepository.find(id: id)
             .flatMapThrowing { (result) -> Group in
                 if let group = result {
                     return group
@@ -42,7 +36,7 @@ final class GroupController: RouteCollection {
     }
     
     func index( _ req: Request) throws -> EventLoopFuture<[Group]> {
-        return self.groupRepository.all()
+        return req.groupRepository.all()
     }
     
     func update( _ req: Request) throws -> EventLoopFuture<Group> {
@@ -55,7 +49,7 @@ final class GroupController: RouteCollection {
                 if let new = form.name {
                     group.name = new
                 }
-                return self.groupRepository.save(group: group)
+                return req.groupRepository.save(group: group)
             }
         
         return updateGroupFuture
@@ -66,7 +60,7 @@ final class GroupController: RouteCollection {
         
         let deleteGroupFuture = findGroupFuture
             .flatMap { (group) -> EventLoopFuture<Response> in
-                return self.groupRepository.delete(group: group)
+                return req.groupRepository.delete(group: group)
                     .transform(to: Response(status: .ok))
             }
         

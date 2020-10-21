@@ -20,6 +20,12 @@ final class User: Model {
     @Field(key: "access_key")
     var accessKey: String
     
+    @Siblings(through: RoleUser.self, from: \.$user, to: \.$role)
+    public var roles: [Role]
+    
+    @Siblings(through: GroupUser.self, from: \.$user, to: \.$group)
+    public var groups: [Group]
+    
     init() {}
     
     init(id: UUID? = nil,

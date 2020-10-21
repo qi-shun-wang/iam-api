@@ -2,12 +2,6 @@ import Vapor
 
 final class PolicyController: RouteCollection {
     
-    private let policyRepository: PolicyRepository
-    
-    init(policyRepository: PolicyRepository) {
-        self.policyRepository = policyRepository
-    }
-    
     func boot(routes: RoutesBuilder) throws {
         //        let allowedPolicy = Application.IAMAuthPolicyMiddleware(allowed: [IAMPolicyIdentifier.root])
         let policies = routes.grouped("policies")//.grouped(allowedPolicy)
@@ -20,7 +14,7 @@ final class PolicyController: RouteCollection {
     
     func create( _ req: Request) throws -> EventLoopFuture<Policy> {
         let form = try req.content.decode(CreatePolicyRequest.self)
-        return self.policyRepository.save(policy: Policy(key: form.key, json: form.json))
+        return req.policyRepository.save(policy: Policy(key: form.key, json: form.json))
         
     }
     
@@ -28,7 +22,7 @@ final class PolicyController: RouteCollection {
         guard let idString = req.parameters.get("id"),
               let id = Policy.IDValue(idString)
         else {throw Abort(HTTPResponseStatus.notFound)}
-        let findPolicyFuture = self.policyRepository.find(id: id)
+        let findPolicyFuture = req.policyRepository.find(id: id)
             .flatMapThrowing { (result) -> Policy in
                 if let policy = result {
                     return policy
@@ -40,7 +34,7 @@ final class PolicyController: RouteCollection {
     }
     
     func index( _ req: Request) throws -> EventLoopFuture<[Policy]> {
-        return self.policyRepository.all()
+        return req.policyRepository.all()
     }
     
     func update( _ req: Request) throws -> EventLoopFuture<Policy> {
@@ -54,7 +48,7 @@ final class PolicyController: RouteCollection {
                 if let new = form.json {
                     policy.json = new
                 }
-                return self.policyRepository.save(policy: policy)
+                return req.policyRepository.save(policy: policy)
             }
         return updatePolicyFuture
     }
@@ -63,7 +57,7 @@ final class PolicyController: RouteCollection {
         let findPolicyFuture = try select(req)
         let deletePolicyFuture = findPolicyFuture
             .flatMap { (policy) -> EventLoopFuture<Response> in
-                return self.policyRepository.delete(policy: policy)
+                return req.policyRepository.delete(policy: policy)
                     .transform(to: Response(status: .ok))
             }
         return deletePolicyFuture

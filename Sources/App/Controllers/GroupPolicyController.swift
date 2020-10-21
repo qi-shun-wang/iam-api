@@ -58,7 +58,7 @@ final class GroupPolicyController: RouteCollection {
         let selectGroupPolicyFuture = try selectGroupAndPolicy(req)
         
         let findPivotFuture = selectGroupPolicyFuture.flatMap { (newPivot) -> EventLoopFuture<GroupPolicy> in
-            let createPivotFuture = self.groupPolicyRepository.findPivot(newPivot.group.id!, newPivot.policy.id!)
+            let createPivotFuture = self.groupPolicyRepository.findPivot(newPivot.group, newPivot.policy)
                 .flatMap { (result) -> EventLoopFuture<GroupPolicy> in
                     if let pivot = result {
                         return req.eventLoop.future(pivot)
@@ -80,7 +80,7 @@ final class GroupPolicyController: RouteCollection {
         let selectGroupPolicyFuture = try selectGroupAndPolicy(req)
         
         let findPivotFuture = selectGroupPolicyFuture.flatMap { (newPivot) -> EventLoopFuture<GroupPolicy> in
-            return self.groupPolicyRepository.findPivot(newPivot.group.id!, newPivot.policy.id!)
+            return self.groupPolicyRepository.findPivot(newPivot.group, newPivot.policy)
                 .flatMapThrowing { (result) -> GroupPolicy in
                     if let pivot = result {
                         return pivot
