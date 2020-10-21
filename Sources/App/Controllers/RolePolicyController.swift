@@ -6,14 +6,14 @@ final class RolePolicyController: RouteCollection {
         //        let allowedPolicy = Application.IAMAuthPolicyMiddleware(allowed: [IAMPolicyIdentifier.root])
         let roles = routes.grouped("roles")//.roleed(allowedPolicy)
         let policies = routes.grouped("policies")//.roleed(allowedPolicy)
-        policies.get(":policy_id", "roles", use: indexRoles)
-        roles.get(":role_id", "policies", use: indexPolicies)
-        roles.delete(":role_id", "policies", ":policy_id", use: delete)
-        roles.post(":role_id", "policies", ":policy_id", use: create)
+        policies.get(":id", "roles", use: indexRoles)
+        roles.get(":id", "policies", use: indexPolicies)
+        roles.delete(":id", "policies", ":policy_id", use: delete)
+        roles.post(":id", "policies", ":policy_id", use: create)
     }
     
     func selectRoleAndPolicy(_ req: Request) throws -> EventLoopFuture<RolePolicy> {
-        guard let roleIDString = req.parameters.get("role_id"),
+        guard let roleIDString = req.parameters.get("id"),
               let policyIDString = req.parameters.get("policy_id"),
               let roleID = Role.IDValue(roleIDString),
               let policyID = Policy.IDValue(policyIDString)
@@ -88,7 +88,7 @@ final class RolePolicyController: RouteCollection {
     
     func indexPolicies(_ req: Request) throws -> EventLoopFuture<[Policy]> {
         
-        guard let roleIDString = req.parameters.get("role_id"),
+        guard let roleIDString = req.parameters.get("id"),
               let roleID = Role.IDValue(roleIDString)
         else {throw Abort(.notFound)}
         let findRoleFuture = req.roleRepository.find(id: roleID)
@@ -106,7 +106,7 @@ final class RolePolicyController: RouteCollection {
     
     func indexRoles(_ req: Request) throws -> EventLoopFuture<[Role]> {
         
-        guard let policyIDString = req.parameters.get("policy_id"),
+        guard let policyIDString = req.parameters.get("id"),
               let policyID = Policy.IDValue(policyIDString)
         else {throw Abort(.notFound)}
         

@@ -6,14 +6,14 @@ final class GroupPolicyController: RouteCollection {
         //        let allowedPolicy = Application.IAMAuthPolicyMiddleware(allowed: [IAMPolicyIdentifier.root])
         let groups = routes.grouped("groups")//.grouped(allowedPolicy)
         let policies = routes.grouped("policies")//.grouped(allowedPolicy)
-        policies.get(":policy_id", "groups", use: indexGroups)
-        groups.get(":group_id", "policies", use: indexPolicies)
-        groups.delete(":group_id", "policies", ":policy_id", use: delete)
-        groups.post(":group_id", "policies", ":policy_id", use: create)
+        policies.get(":id", "groups", use: indexGroups)
+        groups.get(":id", "policies", use: indexPolicies)
+        groups.delete(":id", "policies", ":policy_id", use: delete)
+        groups.post(":id", "policies", ":policy_id", use: create)
     }
     
     func selectGroupAndPolicy(_ req: Request) throws -> EventLoopFuture<GroupPolicy> {
-        guard let groupIDString = req.parameters.get("group_id"),
+        guard let groupIDString = req.parameters.get("id"),
               let policyIDString = req.parameters.get("policy_id"),
               let groupID = Group.IDValue(groupIDString),
               let policyID = Policy.IDValue(policyIDString)
@@ -87,7 +87,7 @@ final class GroupPolicyController: RouteCollection {
     }
     
     func indexPolicies(_ req: Request) throws -> EventLoopFuture<[Policy]> {
-        guard let groupIDString = req.parameters.get("group_id"),
+        guard let groupIDString = req.parameters.get("id"),
               let groupID = Group.IDValue(groupIDString)
         else {throw Abort(.notFound)}
         let findGroupFuture = req.groupRepository.find(id: groupID)
@@ -104,7 +104,7 @@ final class GroupPolicyController: RouteCollection {
     }
     
     func indexGroups(_ req: Request) throws -> EventLoopFuture<[Group]> {
-        guard let policyIDString = req.parameters.get("policy_id"),
+        guard let policyIDString = req.parameters.get("id"),
               let policyID = Policy.IDValue(policyIDString)
         else {throw Abort(.notFound)}
         

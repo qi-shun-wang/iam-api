@@ -6,14 +6,14 @@ final class RoleUserController: RouteCollection {
         //        let allowedPolicy = Application.IAMAuthPolicyMiddleware(allowed: [IAMPolicyIdentifier.root])
         let roles = routes.grouped("roles")//.grouped(allowedPolicy)
         let users = routes.grouped("users")//.grouped(allowedPolicy)
-        users.get(":user_id", "roles", use: indexRoles)
-        roles.get(":role_id", "users", use: indexUsers)
-        roles.delete(":role_id", "users", ":user_id", use: delete)
-        roles.post(":role_id", "users", ":user_id", use: create)
+        users.get(":id", "roles", use: indexRoles)
+        roles.get(":id", "users", use: indexUsers)
+        roles.delete(":id", "users", ":user_id", use: delete)
+        roles.post(":id", "users", ":user_id", use: create)
     }
     
     func selectRoleAndUser(_ req: Request) throws -> EventLoopFuture<RoleUser> {
-        guard let roleIDString = req.parameters.get("role_id"),
+        guard let roleIDString = req.parameters.get("id"),
               let userIDString = req.parameters.get("user_id"),
               let roleID = Role.IDValue(roleIDString),
               let userID = User.IDValue(userIDString)
@@ -88,7 +88,7 @@ final class RoleUserController: RouteCollection {
     }
     
     func indexUsers(_ req: Request) throws -> EventLoopFuture<[User]> {
-        guard let roleIDString = req.parameters.get("role_id"),
+        guard let roleIDString = req.parameters.get("id"),
               let roleID = Role.IDValue(roleIDString)
         else {throw Abort(.notFound)}
         let findRoleFuture = req.roleRepository.find(id: roleID)
@@ -105,7 +105,7 @@ final class RoleUserController: RouteCollection {
     }
     
     func indexRoles(_ req: Request) throws -> EventLoopFuture<[Role]> {
-        guard let userIDString = req.parameters.get("user_id"),
+        guard let userIDString = req.parameters.get("id"),
               let userID = User.IDValue(userIDString)
         else {throw Abort(.notFound)}
         

@@ -7,14 +7,14 @@ final class GroupUserController: RouteCollection {
         //        let allowedPolicy = Application.IAMAuthPolicyMiddleware(allowed: [IAMPolicyIdentifier.root])
         let groups = routes.grouped("groups")//.grouped(allowedPolicy)
         let users = routes.grouped("users")//.grouped(allowedPolicy)
-        users.get(":user_id", "groups", use: indexGroups)
-        groups.get(":group_id", "users", use: indexUsers)
-        groups.delete(":group_id", "users", ":user_id", use: delete)
-        groups.post(":group_id", "users", ":user_id", use: create)
+        users.get(":id", "groups", use: indexGroups)
+        groups.get(":id", "users", use: indexUsers)
+        groups.delete(":id", "users", ":user_id", use: delete)
+        groups.post(":id", "users", ":user_id", use: create)
     }
     
     func selectGroupAndUser(_ req: Request) throws -> EventLoopFuture<GroupUser> {
-        guard let groupIDString = req.parameters.get("group_id"),
+        guard let groupIDString = req.parameters.get("id"),
               let userIDString = req.parameters.get("user_id"),
               let groupID = Group.IDValue(groupIDString),
               let userID = User.IDValue(userIDString)
@@ -91,7 +91,7 @@ final class GroupUserController: RouteCollection {
     
     func indexUsers(_ req: Request) throws -> EventLoopFuture<[User]> {
         
-        guard let groupIDString = req.parameters.get("group_id"),
+        guard let groupIDString = req.parameters.get("id"),
               let groupID = Group.IDValue(groupIDString)
         else {throw Abort(.notFound)}
         let findGroupFuture = req.groupRepository.find(id: groupID)
@@ -109,7 +109,7 @@ final class GroupUserController: RouteCollection {
     
     func indexGroups(_ req: Request) throws -> EventLoopFuture<[Group]> {
         
-        guard let userIDString = req.parameters.get("user_id"),
+        guard let userIDString = req.parameters.get("id"),
               let userID = User.IDValue(userIDString)
         else {throw Abort(.notFound)}
         
