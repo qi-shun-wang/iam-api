@@ -56,15 +56,6 @@
         }
       },
       {
-        "package": "fluent-mongo-driver",
-        "repositoryURL": "https://github.com/vapor/fluent-mongo-driver.git",
-        "state": {
-          "branch": null,
-          "revision": "4f3c1c3d878f58b15d58887e8cbd9c017104024d",
-          "version": "1.0.1"
-        }
-      },
-      {
         "package": "fluent-postgres-driver",
         "repositoryURL": "https://github.com/vapor/fluent-postgres-driver.git",
         "state": {
