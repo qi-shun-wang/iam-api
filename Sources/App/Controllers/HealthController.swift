@@ -1,5 +1,4 @@
 import Vapor
-import FluentMongoDriver
 import Fluent
 
 final class HealthController: RouteCollection {
